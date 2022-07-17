@@ -2,7 +2,7 @@ import React from 'react';
 import logo from '../logo.svg';
 import '../App.css';
 
-export const ContractCreatedView = ({ addresses }) => {
+export const ContractCreatedView = ({ addresses, contractAddress }) => {
     return (
         <header className="App-header">
             <div className='horizontal-flex'>
@@ -10,7 +10,7 @@ export const ContractCreatedView = ({ addresses }) => {
                     Contract address:
                 </p>
                 <p>
-                    {`bigNumber: '0xab'`}
+                    {contractAddress}
                 </p>
             </div>
             <p>
