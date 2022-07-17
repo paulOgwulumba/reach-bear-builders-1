@@ -3,28 +3,33 @@
 export const main = Reach.App(() => {
   setOptions({ untrustworthyMaps: true });
 
-  const A = Participant('Alice', {
-    displayWhiteListedAddress: Fun([Data({"None": Null, "Some": Address})], Null)
+  const Isaac = Participant('Isaac', {
+    transferTokenToAddressIfValid: Fun([Address, Bool], Null)
   });
-  const B = Participant('Bob', {
-    displayWhiteListedAddress: Fun([Data({"None": Null, "Some": Address})], Null)
-  });
+
+  const Jacob = Participant('Jacob', {});
+
+  const Esau = Participant('Esau', {});
+
   init();
 
   // The first one to publish deploys the contract
-  A.publish();
+  Isaac.publish();
   commit();
   
-  // The second one to publish always attaches
-  B.publish();
-
-  const addressMap = new Map(Address, Address);
-  addressMap[this] = B;
-
+  // The second one to publish attaches and gets whitelisted
+  Jacob.publish();
+  const WhitelistedAddressMap = new Set();
+  WhitelistedAddressMap.insert(Jacob);
   commit();
 
-  each([A, B],() => {
-    interact.displayWhiteListedAddress(addressMap[B]);
+  // The third one to publish attaches but does not get whitelisted
+  Esau.publish();
+  commit();
+
+  Isaac.only(() => {
+    interact.transferTokenToAddressIfValid(Esau, WhitelistedAddressMap.member(Esau));
+    interact.transferTokenToAddressIfValid(Jacob, WhitelistedAddressMap.member(Jacob));
   });
 
   exit();
