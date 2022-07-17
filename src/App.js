@@ -37,6 +37,7 @@ function App() {
   const [contractAddress, setContractAddress] = useState('');
   const [walletSubmissionPromise, setWalletSubmissionPromise] = useState({ resolver: null });
   const [outcome, setOutcome] = useState(false);
+  const [isComplete, setIsComplete] = useState(false);
 
   const fmt = (x) => stdlib.formatCurrency(x, 4);
 
@@ -55,6 +56,7 @@ function App() {
   };
 
   const submitWallet = async () => {
+    setCurrentView(Views.LOADING);
     await new Promise((resolve) => {
       setWalletSubmissionPromise({resolver: () => resolve()});
     });
@@ -69,8 +71,9 @@ function App() {
     },
   
     submitWalletAddress: async () => {
-      setCurrentView(Views.SUBMIT_ADDRESS);
+      if (isComplete) return;
 
+      setCurrentView(Views.SUBMIT_ADDRESS);
       await submitWallet();
       console.log('wallet submitted');
     },
@@ -85,6 +88,7 @@ function App() {
         setOutcome(false);
       }
 
+      setIsComplete(true);
       setCurrentView(Views.ERROR_OR_SUCCESS);
     },
   
@@ -117,11 +121,12 @@ function App() {
     setCurrentView(Views.CONTRACT_CREATED);
   }
 
-  const joinContract = (contractInfo) => {
+  const joinContract = async (contractInfo) => {
     try {
       setCurrentView(Views.LOADING)
-      const ctc = account.contract(backend, JSON.parse(contractInfo));
+      const ctc = await account.contract(backend, JSON.parse(contractInfo));
       backend.Attacher(ctc, Attacher);
+      console.log('connecting')
     }
     catch (e) {
       alert('Please enter a valid contract address.')
