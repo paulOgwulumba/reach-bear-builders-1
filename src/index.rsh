@@ -32,7 +32,7 @@ export const main = Reach.App(() => {
   const WHITELIST = new Set();
   
   var [numberWhitelisted] = [0];
-  invariant(balance(token) === (500000000 - (numberWhitelisted * 200000000)) );
+  invariant(balance(token) === (500000000 - (numberWhitelisted * 10000000)) );
   while(true){
     commit();
 
@@ -54,9 +54,8 @@ export const main = Reach.App(() => {
 
     if((numberWhitelisted<5) && (!WHITELIST.member(attacherAddress)) ){
       WHITELIST.insert(attacherAddress);
-      transfer(200000000, token).to(attacherAddress);
+      transfer(10000000, token).to(attacherAddress);
       Creator.interact.getNotifiedOfTransfer(attacherAddress);
-      Attacher.interact.checkBalance(token);
       Attacher.interact.getPaymentStatus(true);
       Attacher.interact.checkBalance(token);
       [ numberWhitelisted ] = [numberWhitelisted + 1];
